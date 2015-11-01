@@ -27,7 +27,7 @@
 #include <string.h>
 
 /**
- * This structure define one record in symvolic table.
+ * This structure define one record in symbolic table.
  * Field name: symbolic name
  * Field address: real address (in this object file) there this label declared
  * address=0xffff (-1) means that label undeclared
@@ -102,7 +102,7 @@ typedef struct {
 } var_table;
 
 /**
- * Implementation of 
+ * Implementation of object file
  */
 typedef struct {
     symbol_table symbol;
@@ -119,7 +119,7 @@ typedef struct {
 //
 int yla_obj_put_cop_arg(object_file_impl* o, yla_cop_type cop, yla_int_type value);
 int yla_obj_put_cop(object_file_impl* o, yla_cop_type cop);
-int yla_obj_find_symbol(symbol_table *symbol, char *name);
+size_t yla_obj_find_symbol(symbol_table *symbol, char *name);
 int yla_obj_add_symbol(object_file_impl* o, char *name, yla_int_type address, size_t *index);
 int yla_obj_put_int(object_file_impl* o, yla_int_type value);
 int yla_obj_add_ref(object_file_impl *o, yla_int_type address, reference_type type);
@@ -274,7 +274,7 @@ int yla_obj_put_int(object_file_impl* o, yla_int_type value)
 //
 // private functions symbolic table
 //
-int yla_obj_find_symbol(symbol_table *symbol, char *name)
+size_t yla_obj_find_symbol(symbol_table *symbol, char *name)
 {
     int i;
     symbol_record *record = symbol->table;
