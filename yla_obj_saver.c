@@ -120,6 +120,7 @@ typedef struct {
 int yla_obj_put_cop_arg(object_file_impl* o, yla_cop_type cop, yla_int_type value);
 int yla_obj_put_cop(object_file_impl* o, yla_cop_type cop);
 int yla_obj_find_symbol(symbol_table *symbol, char *name);
+int yla_obj_add_symbol(object_file_impl* o, char *name, int address);
 
 //
 // implementation
@@ -162,9 +163,10 @@ int yla_obj_add_label(object_file* ofile, char* name)
     symbol_table *symbol = &o->symbol;
     size_t index = yla_obj_find_symbol(symbol, name);
     if (index < 0) {
-        return yla_obj_add_symbol(symbol, o->code.PC);
+        return yla_obj_add_symbol(o, name, o->code.PC);
     }
     symbol->table[index].address = o->code.PC;
+    return YLA_OBJ_SAVER_OK;
 }
 
 int yla_obj_command(object_file* ofile, yla_cop_type cop)
@@ -259,4 +261,24 @@ int yla_obj_find_symbol(symbol_table *symbol, char *name)
         }
     }
     return -1;
+}
+
+int yla_obj_add_symbol(object_file_impl* o, char *name, int address)
+{
+    symbol_table *symbol = &o->symbol;
+    if (symbol->count >= YLA_OBJ_NAME_TABLE_SIZE) {
+        o->last_error = YLA_OBJ_SAVER_ERROR_OVERSYMBOL;
+        return YLA_OBJ_SAVER_ERROR;
+    }
+
+    if (strlen(name) >= YLA_OBJ_NAME_MAX_LENGHT) {
+        o->last_error = YLA_OBJ_SAVER_ERROR_TOO_LONG_LABEL;
+        return YLA_OBJ_SAVER_ERROR;
+    }
+
+    symbol_record *record = &symbol->table[symbol->count++];
+    strncpy(record->name, name, YLA_OBJ_NAME_MAX_LENGHT);
+    record->address = address;
+
+    return YLA_OBJ_SAVER_OK;
 }
