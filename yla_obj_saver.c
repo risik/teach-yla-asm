@@ -201,9 +201,12 @@ int yla_obj_command_offset(object_file* ofile, yla_cop_type cop, char* name)
     yla_obj_command_int_internal(o, cop, name, RefOffset);
 }
 
-int yla_obj_command_address(object_file* ofile, yla_cop_type cop, char* operand)
+int yla_obj_command_address(object_file* ofile, yla_cop_type cop, char* name)
 {
-    // TODO (risik): implement
+    CHECK_OFILE_NULL(ofile);
+    object_file_impl* o = (object_file_impl*)ofile->impl;
+
+    yla_obj_command_int_internal(o, cop, name, RefAbsolute);
 }
 
 int yla_obj_command_var(object_file* ofile, yla_cop_type cop, char* operand)
