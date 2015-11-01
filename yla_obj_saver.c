@@ -124,6 +124,8 @@ int yla_obj_add_symbol(object_file_impl* o, char *name, yla_int_type address, si
 int yla_obj_put_int(object_file_impl* o, yla_int_type value);
 int yla_obj_add_ref(object_file_impl *o, yla_int_type address, reference_type type);
 int yla_obj_command_int_internal(object_file_impl *o, yla_cop_type cop, char *name, reference_type type);
+size_t yla_obj_find_var(object_file_impl* o, char *name);
+int yla_obj_add_var(object_file_impl* o, char *name, size_t *index_ref);
 
 //
 // implementation
@@ -209,9 +211,25 @@ int yla_obj_command_address(object_file* ofile, yla_cop_type cop, char* name)
     yla_obj_command_int_internal(o, cop, name, RefAbsolute);
 }
 
-int yla_obj_command_var(object_file* ofile, yla_cop_type cop, char* operand)
+int yla_obj_command_var(object_file* ofile, yla_cop_type cop, char* name)
 {
-    // TODO (risik): implement
+    CHECK_OFILE_NULL(ofile);
+    object_file_impl* o = (object_file_impl*)ofile->impl;
+
+    size_t index = yla_obj_find_var(o, name);
+    if (index < 0) {
+        int res = yla_obj_add_var(o, name, &index);
+        if (res != YLA_OBJ_SAVER_OK) {
+            return res;
+        }
+    }
+
+    int res = yla_obj_put_cop(o, cop);
+    if (res != YLA_OBJ_SAVER_OK) {
+        return res;
+    }
+
+    return yla_obj_put_int(o, (yla_int_type)index);
 }
 
 //
@@ -276,7 +294,7 @@ int yla_obj_add_symbol(object_file_impl* o, char *name, yla_int_type address, si
         return YLA_OBJ_SAVER_ERROR;
     }
 
-    if (strlen(name) >= YLA_OBJ_NAME_MAX_LENGHT) {
+    if (strlen(name) >= YLA_OBJ_NAME_MAX_LENGHT - 1) {
         o->last_error = YLA_OBJ_SAVER_ERROR_TOO_LONG_LABEL;
         return YLA_OBJ_SAVER_ERROR;
     }
@@ -333,5 +351,45 @@ yla_obj_command_int_internal(object_file_impl* o, yla_cop_type cop, char *name, 
     }
 
     return yla_obj_put_int(o, (yla_int_type)index);
+}
 
+//
+// private functions for vartable
+//
+
+size_t yla_obj_find_var(object_file_impl* o, char *name)
+{
+    int i;
+    var_table *vartable = &o->var;
+    var_table_record *record = vartable->table;
+    for (i=0; i<vartable->count; i++, record++) {
+        if (strncmp(record->name, name, YLA_OBJ_NAME_MAX_LENGHT) == 0) {
+            return i;
+        }
+    }
+    return -1;
+}
+
+int yla_obj_add_var(object_file_impl* o, char *name, size_t *index_ref)
+{
+    var_table *vartable = &o->var;
+    if (vartable->count >= YLA_OBJ_VAR_TABLE_SIZE) {
+        o->last_error = YLA_OBJ_SAVER_ERROR_OVERVAR;
+        return YLA_OBJ_SAVER_ERROR;
+    }
+
+    if (strlen(name) >= YLA_OBJ_NAME_MAX_LENGHT - 1) {
+        o->last_error = YLA_OBJ_SAVER_ERROR_TOO_LONG_LABEL;
+        return YLA_OBJ_SAVER_ERROR;
+    }
+
+    size_t index = vartable->count;
+    if (index_ref != NULL) {
+        *index_ref = index;
+    }
+
+    var_table_record *record = vartable->table;
+    strncpy(record->name, name, YLA_OBJ_NAME_MAX_LENGHT);
+
+    return YLA_OBJ_SAVER_OK;
 }

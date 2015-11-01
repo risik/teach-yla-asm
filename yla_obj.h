@@ -39,6 +39,10 @@
  */
 #define YLA_OBJ_NAME_REF_TABLE_SIZE 200
 
+/**
+ * Define max size of global variables table in the object file
+ */
+#define YLA_OBJ_VAR_TABLE_SIZE 20
 
 /**
  * Magic prefix: 6 bytes filled in with text: ylaobj
