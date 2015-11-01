@@ -160,6 +160,11 @@ int yla_obj_save(object_file* ofile, FILE* file)
     // TODO (risik): implement
 }
 
+int yla_obj_save_buffer(object_file* ofile, unsigned char *buffer, size_t *size)
+{
+    // TODO (risik): implement
+}
+
 int yla_obj_add_label(object_file* ofile, char* name)
 {
     CHECK_OFILE_NULL(ofile);

@@ -62,7 +62,7 @@ typedef struct {
 #define YLA_OBJ_SAVER_ERROR_OVERSYMBOL (2)
 #define YLA_OBJ_SAVER_ERROR_TOO_LONG_LABEL (3)
 #define YLA_OBJ_SAVER_ERROR_OVERREF (4)
-#define YLA_OBJ_SAVER_ERROR_OVERVAR (4)
+#define YLA_OBJ_SAVER_ERROR_OVERVAR (5)
 
 /**
  * Initialize object file saver
@@ -103,6 +103,16 @@ int yla_obj_error_text(object_file* ofile, int error_code, char *buf, int buf_le
  * @return 0: ok, 1: error, -1: fatal error
  */
 int yla_obj_save(object_file* ofile, FILE* file);
+
+/**
+ * Save object file in memory buffer.
+ * If memory buffer too small then required size returns back in the size parameter
+ * @param ofile current object file structure.
+ * @param buffer memory buffer to save object file
+ * @param size of buffer memory buffer. Note thos param is IN and OUT.
+ * @return 0: ok, 1: error, -1: fatal error
+ */
+int yla_obj_save_buffer(object_file* ofile, unsigned char *buffer, size_t *size);
 
 /**
  * Add label. This mean that current PC 
