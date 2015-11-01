@@ -123,6 +123,7 @@ int yla_obj_find_symbol(symbol_table *symbol, char *name);
 int yla_obj_add_symbol(object_file_impl* o, char *name, yla_int_type address, size_t *index);
 int yla_obj_put_int(object_file_impl* o, yla_int_type value);
 int yla_obj_add_ref(object_file_impl *o, yla_int_type address, reference_type type);
+int yla_obj_command_int_internal(object_file_impl *o, yla_cop_type cop, char *name, reference_type type);
 
 //
 // implementation
@@ -197,26 +198,7 @@ int yla_obj_command_offset(object_file* ofile, yla_cop_type cop, char* name)
     CHECK_OFILE_NULL(ofile);
     object_file_impl* o = (object_file_impl*)ofile->impl;
 
-    size_t index = yla_obj_find_symbol(&o->symbol, name);
-    if (index < 0) {
-        int res = yla_obj_add_symbol(o, name, -1, &index);
-        if (res != YLA_OBJ_SAVER_OK) {
-            return res;
-        }
-    }
-
-    int res = yla_obj_put_cop(o, cop);
-    if (res != YLA_OBJ_SAVER_OK) {
-        return res;
-    }
-
-    res = yla_obj_add_ref(o, o->code.PC, RefOffset);
-
-    if (res != YLA_OBJ_SAVER_OK) {
-        return res;
-    }
-
-    return yla_obj_put_int(o, (yla_int_type)index);
+    yla_obj_command_int_internal(o, cop, name, RefOffset);
 }
 
 int yla_obj_command_address(object_file* ofile, yla_cop_type cop, char* operand)
@@ -324,4 +306,29 @@ int yla_obj_add_ref(object_file_impl *o, yla_int_type address, reference_type ty
     record->type = type;
 
     return YLA_OBJ_SAVER_OK;
+}
+
+yla_obj_command_int_internal(object_file_impl* o, yla_cop_type cop, char *name, reference_type type)
+{
+            size_t index = yla_obj_find_symbol(&o->symbol, name);
+    if (index < 0) {
+        int res = yla_obj_add_symbol(o, name, -1, &index);
+        if (res != YLA_OBJ_SAVER_OK) {
+            return res;
+        }
+    }
+
+    int res = yla_obj_put_cop(o, cop);
+    if (res != YLA_OBJ_SAVER_OK) {
+        return res;
+    }
+
+    res = yla_obj_add_ref(o, o->code.PC, type);
+
+    if (res != YLA_OBJ_SAVER_OK) {
+        return res;
+    }
+
+    return yla_obj_put_int(o, (yla_int_type)index);
+
 }
