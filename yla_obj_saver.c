@@ -183,6 +183,21 @@ int yla_obj_command_int(object_file* ofile, yla_cop_type cop, yla_int_type opera
     return yla_obj_put_cop_arg(o, cop, operand);
 }
 
+int yla_obj_command_offset(object_file* ofile, yla_cop_type cop, char* operand)
+{
+    // TODO (risik): implement
+}
+
+int yla_obj_command_address(object_file* ofile, yla_cop_type cop, char* operand)
+{
+    // TODO (risik): implement
+}
+
+int yla_obj_command_var(object_file* ofile, yla_cop_type cop, char* operand)
+{
+    // TODO (risik): implement
+}
+
 //
 // private functions code genrration
 //
