@@ -119,6 +119,7 @@ typedef struct {
 //
 int yla_obj_put_cop_arg(object_file_impl* o, yla_cop_type cop, yla_int_type value);
 int yla_obj_put_cop(object_file_impl* o, yla_cop_type cop);
+int yla_obj_find_symbol(symbol_table *symbol, char *name);
 
 //
 // implementation
@@ -158,10 +159,12 @@ int yla_obj_add_label(object_file* ofile, char* name)
     CHECK_OFILE_NULL(ofile);
     object_file_impl* o = (object_file_impl*)ofile->impl;
 
-    size_t index = yla_obj_find(name);
+    symbol_table *symbol = &o->symbol;
+    size_t index = yla_obj_find_symbol(symbol, name);
     if (index < 0) {
-        o->symbol.table;
+        return yla_obj_add_symbol(symbol, o->code.PC);
     }
+    symbol->table[index].address = o->code.PC;
 }
 
 int yla_obj_command(object_file* ofile, yla_cop_type cop)
@@ -169,11 +172,7 @@ int yla_obj_command(object_file* ofile, yla_cop_type cop)
     CHECK_OFILE_NULL(ofile);
     object_file_impl* o = (object_file_impl*)ofile->impl;
 
-    if (o->code.PC + sizeof(yla_int_type) >= YLA_OBJ_SAVER_MAX_CODE) {
-        o->last_error = YLA_OBJ_SAVER_ERROR_OVERCODE;
-        return YLA_OBJ_SAVER_ERROR;
-    }
-    o->code.memory[o->code.PC++] = cop;
+    return yla_obj_put_cop(o, cop);
 }
 
 int yla_obj_command_int(object_file* ofile, yla_cop_type cop, yla_int_type operand)
@@ -181,11 +180,7 @@ int yla_obj_command_int(object_file* ofile, yla_cop_type cop, yla_int_type opera
     CHECK_OFILE_NULL(ofile);
     object_file_impl* o = (object_file_impl*)ofile->impl;
 
-    if (o->code.PC + sizeof(yla_cop_type) + sizeof(yla_int_type) >= YLA_OBJ_SAVER_MAX_CODE) {
-        o->last_error = YLA_OBJ_SAVER_ERROR_OVERCODE;
-        return YLA_OBJ_SAVER_ERROR;
-    }
-    o->code.memory[o->code.PC++] = cop;
+    return yla_obj_put_cop_arg(o, cop, operand);
 }
 
 //
@@ -239,7 +234,14 @@ int yla_obj_put_cop_arg(object_file_impl* o, yla_cop_type cop, yla_int_type valu
 //
 // private functions symbolic table
 //
-int yla_obj_find(char *name)
+int yla_obj_find_symbol(symbol_table *symbol, char *name)
 {
-    // TODO (risik): implement
+    int i;
+    symbol_record *record = symbol->table;
+    for (i=0; i<symbol->count; i++, record++) {
+        if (strncmp(record->name, name, YLA_OBJ_NAME_MAX_LENGHT) == 0) {
+            return i;
+        }
+    }
+    return -1;
 }
