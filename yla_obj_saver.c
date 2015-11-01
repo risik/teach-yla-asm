@@ -313,7 +313,7 @@ int yla_obj_add_ref(object_file_impl *o, yla_int_type address, reference_type ty
 
 yla_obj_command_int_internal(object_file_impl* o, yla_cop_type cop, char *name, reference_type type)
 {
-            size_t index = yla_obj_find_symbol(&o->symbol, name);
+    size_t index = yla_obj_find_symbol(&o->symbol, name);
     if (index < 0) {
         int res = yla_obj_add_symbol(o, name, -1, &index);
         if (res != YLA_OBJ_SAVER_OK) {
