@@ -61,6 +61,7 @@ typedef struct {
 #define YLA_OBJ_SAVER_ERROR_OVERCODE (1)
 #define YLA_OBJ_SAVER_ERROR_OVERSYMBOL (2)
 #define YLA_OBJ_SAVER_ERROR_TOO_LONG_LABEL (3)
+#define YLA_OBJ_SAVER_ERROR_OVERREF (4)
 
 /**
  * Initialize object file saver

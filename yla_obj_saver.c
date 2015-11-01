@@ -120,7 +120,9 @@ typedef struct {
 int yla_obj_put_cop_arg(object_file_impl* o, yla_cop_type cop, yla_int_type value);
 int yla_obj_put_cop(object_file_impl* o, yla_cop_type cop);
 int yla_obj_find_symbol(symbol_table *symbol, char *name);
-int yla_obj_add_symbol(object_file_impl* o, char *name, int address);
+int yla_obj_add_symbol(object_file_impl* o, char *name, yla_int_type address, size_t *index);
+int yla_obj_put_int(object_file_impl* o, yla_int_type value);
+int yla_obj_add_ref(object_file_impl *o, yla_int_type address, reference_type type);
 
 //
 // implementation
@@ -163,7 +165,7 @@ int yla_obj_add_label(object_file* ofile, char* name)
     symbol_table *symbol = &o->symbol;
     size_t index = yla_obj_find_symbol(symbol, name);
     if (index < 0) {
-        return yla_obj_add_symbol(o, name, o->code.PC);
+        int res = yla_obj_add_symbol(o, name, o->code.PC, NULL);
     }
     symbol->table[index].address = o->code.PC;
     return YLA_OBJ_SAVER_OK;
@@ -182,12 +184,39 @@ int yla_obj_command_int(object_file* ofile, yla_cop_type cop, yla_int_type opera
     CHECK_OFILE_NULL(ofile);
     object_file_impl* o = (object_file_impl*)ofile->impl;
 
-    return yla_obj_put_cop_arg(o, cop, operand);
+    int res = yla_obj_put_cop(o, cop);
+    if (res != YLA_OBJ_SAVER_OK) {
+        return res;
+    }
+
+    return yla_obj_put_int(o, operand);
 }
 
-int yla_obj_command_offset(object_file* ofile, yla_cop_type cop, char* operand)
+int yla_obj_command_offset(object_file* ofile, yla_cop_type cop, char* name)
 {
-    // TODO (risik): implement
+    CHECK_OFILE_NULL(ofile);
+    object_file_impl* o = (object_file_impl*)ofile->impl;
+
+    size_t index = yla_obj_find_symbol(&o->symbol, name);
+    if (index < 0) {
+        int res = yla_obj_add_symbol(o, name, -1, &index);
+        if (res != YLA_OBJ_SAVER_OK) {
+            return res;
+        }
+    }
+
+    int res = yla_obj_put_cop(o, cop);
+    if (res != YLA_OBJ_SAVER_OK) {
+        return res;
+    }
+
+    res = yla_obj_add_ref(o, o->code.PC, RefOffset);
+
+    if (res != YLA_OBJ_SAVER_OK) {
+        return res;
+    }
+
+    return yla_obj_put_int(o, (yla_int_type)index);
 }
 
 int yla_obj_command_address(object_file* ofile, yla_cop_type cop, char* operand)
@@ -239,15 +268,6 @@ int yla_obj_put_int(object_file_impl* o, yla_int_type value)
     }
 }
 
-int yla_obj_put_cop_arg(object_file_impl* o, yla_cop_type cop, yla_int_type value)
-{
-    int res = yla_obj_put_cop(o, cop);
-    if (res != YLA_OBJ_SAVER_OK) {
-        return res;
-    }
-    return yla_obj_put_int(o, value);
-}
-
 //
 // private functions symbolic table
 //
@@ -263,7 +283,7 @@ int yla_obj_find_symbol(symbol_table *symbol, char *name)
     return -1;
 }
 
-int yla_obj_add_symbol(object_file_impl* o, char *name, int address)
+int yla_obj_add_symbol(object_file_impl* o, char *name, yla_int_type address, size_t *index_ref)
 {
     symbol_table *symbol = &o->symbol;
     if (symbol->count >= YLA_OBJ_NAME_TABLE_SIZE) {
@@ -276,9 +296,32 @@ int yla_obj_add_symbol(object_file_impl* o, char *name, int address)
         return YLA_OBJ_SAVER_ERROR;
     }
 
-    symbol_record *record = &symbol->table[symbol->count++];
+    size_t index = symbol->count;
+    if (index_ref != NULL) {
+        *index_ref = index;
+    }
+
+    symbol_record *record = &symbol->table[index];
     strncpy(record->name, name, YLA_OBJ_NAME_MAX_LENGHT);
     record->address = address;
+
+    return YLA_OBJ_SAVER_OK;
+}
+
+//
+// private functions for reference table
+//
+int yla_obj_add_ref(object_file_impl *o, yla_int_type address, reference_type type)
+{
+    reference_table* reference = &o->reference;
+    if (reference->count >= YLA_OBJ_NAME_REF_TABLE_SIZE) {
+        o->last_error = YLA_OBJ_SAVER_ERROR_OVERREF;
+        return YLA_OBJ_SAVER_ERROR;
+    }
+
+    reference_record* record = &reference->table[reference->count++];
+    record->address = address;
+    record->type = type;
 
     return YLA_OBJ_SAVER_OK;
 }
