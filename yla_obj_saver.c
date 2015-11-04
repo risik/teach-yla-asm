@@ -124,8 +124,15 @@ int yla_obj_add_symbol(object_file_impl* o, char *name, yla_int_type address, si
 int yla_obj_put_int(object_file_impl* o, yla_int_type value);
 int yla_obj_add_ref(object_file_impl *o, yla_int_type address, reference_type type);
 int yla_obj_command_int_internal(object_file_impl *o, yla_cop_type cop, char *name, reference_type type);
+
 size_t yla_obj_find_var(object_file_impl* o, char *name);
 int yla_obj_add_var(object_file_impl* o, char *name, size_t *index_ref);
+
+int yla_save_header(object_file_impl* o, unsigned char **buffer);
+int yla_save_symbols(object_file_impl* o, unsigned char **buffer);
+int yla_save_code(object_file_impl* o, unsigned char **buffer);
+
+size_t count_required_size(object_file_impl* o);
 
 //
 // implementation
@@ -158,11 +165,25 @@ int yla_obj_done(object_file* ofile)
 int yla_obj_save(object_file* ofile, FILE* file)
 {
     // TODO (risik): implement
+
 }
 
 int yla_obj_save_buffer(object_file* ofile, unsigned char *buffer, size_t *size)
 {
-    // TODO (risik): implement
+    CHECK_OFILE_NULL(ofile);
+    object_file_impl* o = (object_file_impl*)ofile->impl;
+
+    size_t required_size = count_required_size(o);
+    if (required_size > *size) {
+        *size = required_size;
+        return YLA_OBJ_SAVER_ERROR;
+    }
+
+    yla_save_header(o, &buffer);
+    yla_save_symbols(o, &buffer);
+    yla_save_code(o, &buffer);
+
+    return YLA_OBJ_SAVER_OK;
 }
 
 int yla_obj_add_label(object_file* ofile, char* name)
@@ -397,4 +418,53 @@ int yla_obj_add_var(object_file_impl* o, char *name, size_t *index_ref)
     strncpy(record->name, name, YLA_OBJ_NAME_MAX_LENGHT);
 
     return YLA_OBJ_SAVER_OK;
+}
+
+//
+// private functions for save object file
+//
+int yla_save_put_byte(unsigned char **buffer, unsigned char value)
+{
+    **buffer = value;
+	(*buffer)++;
+}
+
+int yla_save_put_int(unsigned char **buffer, yla_int_type value)
+{
+    int i;
+    unsigned int mask = 0xff;
+    unsigned int int_value = value;
+
+    mask <<= (8*(sizeof(unsigned int)-1));
+    int_value <<= (8*(sizeof(unsigned int) - sizeof(yla_int_type)));
+
+    for (i=0; i<sizeof(yla_int_type); ++i) {
+        unsigned int only_value = (int_value & mask);
+        only_value >>= (8*(sizeof(unsigned int)-1));
+        unsigned char char_value = (unsigned char)only_value;
+        yla_save_put_byte(buffer, char_value);
+        int_value <<= 8;
+    }
+}
+
+int yla_save_header(object_file_impl* o, unsigned char **buffer)
+{
+    // TODO (risik): implement
+}
+
+int yla_save_symbols(object_file_impl* o, unsigned char **buffer)
+{
+    // TODO (risik): implement
+}
+
+int yla_save_code(object_file_impl* o, unsigned char **buffer)
+{
+    // TODO (risik): implement
+}
+
+size_t count_required_size(object_file_impl* o)
+{
+    return YLA_OBJ_HEADER_SIZE
+        + o->symbol.count * (YLA_OBJ_NAME_MAX_LENGHT + sizeof(yla_int_type))
+        + o->code.PC;
 }
