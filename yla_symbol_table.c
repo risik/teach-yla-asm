@@ -55,6 +55,11 @@ size_t yla_symbol_find(symbol_table_impl *o, char* name);
 int yla_symbol_init(symbol_table *table, size_t size)
 {
     CHECK_THIS_TABLE(table);
+    // table size == 0 not acceptable
+    if (size == 0) {
+        return YLA_FATAL;
+    }
+
     symbol_table_impl* o = malloc(sizeof(symbol_table_impl));
 
     o->last_error = YLA_SYMBOLIC_ERROR_OK;

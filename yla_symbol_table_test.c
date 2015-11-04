@@ -23,6 +23,12 @@ YLATEST_CASE_BEGIN(test_init_done)
     YLATEST_ASSERT_TRUE(yla_symbol_done(&symbol) == YLA_OK, "normal done");
 YLATEST_CASE_END
 
+YLATEST_CASE_BEGIN(test_init0)
+    symbol_table symbol;
+    YLATEST_ASSERT_FALSE(yla_symbol_init(&symbol, 0) == YLA_OK, "init with zero");
+YLATEST_CASE_END
+
 YLATEST_BEGIN(yla_symbol_table_test)
   YLATEST_ADD_TEST_CASE(test_init_done)
+  YLATEST_ADD_TEST_CASE(test_init0)
 YLATEST_END
