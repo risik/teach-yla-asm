@@ -28,7 +28,20 @@ YLATEST_CASE_BEGIN(test_init0)
     YLATEST_ASSERT_FALSE(yla_symbol_init(&symbol, 0) == YLA_OK, "init with zero");
 YLATEST_CASE_END
 
+YLATEST_CASE_BEGIN(test_add_simple)
+    symbol_table symbol;
+    YLATEST_ASSERT_TRUE(yla_symbol_init(&symbol, 1) == YLA_OK, "normal init");
+
+    YLATEST_ASSERT_TRUE(yla_symbol_add_name(&symbol, "aaa") == YLA_OK, "normal add");
+    YLATEST_ASSERT_FALSE(yla_symbol_add_name(&symbol, "bbb") == YLA_OK, "add exceed");
+    YLATEST_ASSERT_TRUE(YLA_SYMBOLIC_ERROR_TABLE_FULL == yla_symbol_last_error(&symbol), "check last error");
+    YLATEST_ASSERT_TRUE(YLA_SYMBOLIC_ERROR_OK == yla_symbol_last_error(&symbol), "recheck last error");
+
+    YLATEST_ASSERT_TRUE(yla_symbol_done(&symbol) == YLA_OK, "normal done");
+YLATEST_CASE_END
+
 YLATEST_BEGIN(yla_symbol_table_test)
   YLATEST_ADD_TEST_CASE(test_init_done)
   YLATEST_ADD_TEST_CASE(test_init0)
+  YLATEST_ADD_TEST_CASE(test_add_simple)
 YLATEST_END

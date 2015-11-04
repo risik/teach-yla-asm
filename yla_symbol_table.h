@@ -63,7 +63,7 @@ int yla_symbol_done(symbol_table *table);
 /**
  * Returns last error code.
  * @param table self table
- * @return execution status YLA_OK, YLA_ERROR or YLA_FATAL
+ * @return one of YLA_SYMBOLIC_ERROR* status
  */
 int yla_symbol_last_error(symbol_table *table);
 

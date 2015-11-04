@@ -86,7 +86,11 @@ int yla_symbol_last_error(symbol_table *table)
     CHECK_THIS_TABLE(table);
     symbol_table_impl *o = (symbol_table_impl *)table->impl;
 
-    return o->last_error;
+    int result = o->last_error;
+    
+    o->last_error = YLA_SYMBOLIC_ERROR_OK;
+    
+    return result;
 }
 
 int yla_symbol_add_name(symbol_table *table, char* name)
