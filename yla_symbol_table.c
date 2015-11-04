@@ -129,8 +129,7 @@ int yla_symbol_has_name(symbol_table *table, char* name, int *result)
     CHECK_THIS_TABLE(table);
     symbol_table_impl *o = (symbol_table_impl *)table->impl;
     
-    // find and fail if found
-    if (yla_symbol_find(o, name) != -1) {
+    if (yla_symbol_find(o, name) == -1) {
         *result = 0;
         return YLA_OK;
     }
@@ -203,7 +202,7 @@ size_t yla_symbol_find(symbol_table_impl *o, char* name)
 {
     int i;
     for (i=0; i<o->count; i++) {
-        if (strncpy(o->table[i].name, name, YLA_SYMBOLIC_MAX_LENGHT) == 0) {
+        if (strncmp(o->table[i].name, name, YLA_SYMBOLIC_MAX_LENGHT) == 0) {
             return i;
         }
     }

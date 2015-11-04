@@ -37,6 +37,23 @@ YLATEST_CASE_BEGIN(test_add_simple)
     YLATEST_ASSERT_TRUE(YLA_SYMBOLIC_ERROR_TABLE_FULL == yla_symbol_last_error(&symbol), "check last error");
     YLATEST_ASSERT_TRUE(YLA_SYMBOLIC_ERROR_OK == yla_symbol_last_error(&symbol), "recheck last error");
 
+    int has_name1 = -1;
+    YLATEST_ASSERT_TRUE(yla_symbol_has_name(&symbol, "aaa", &has_name1) == YLA_OK, "has_name must always OK");
+    YLATEST_ASSERT_TRUE(has_name1 == 1, "added name not found");
+
+    int has_name2 = -1;
+    YLATEST_ASSERT_TRUE(yla_symbol_has_name(&symbol, "bbb", &has_name2) == YLA_OK, "has_name must always OK");
+    YLATEST_ASSERT_TRUE(has_name2 == 0, "not added name not found");
+
+    yla_int_type address1 = 666;
+    YLATEST_ASSERT_FALSE(yla_symbol_get_address(&symbol, "aaa", &address1) == YLA_OK, "get address before set");
+    YLATEST_ASSERT_TRUE(address1 == 666, "local address must be not not changed");
+
+    yla_int_type address2 = 666;
+    YLATEST_ASSERT_TRUE(yla_symbol_set_address(&symbol, "aaa", 555) == YLA_OK, "normal set");
+    YLATEST_ASSERT_FALSE(yla_symbol_get_address(&symbol, "aaa", &address2) == YLA_OK, "get address before set");
+    YLATEST_ASSERT_TRUE(address2 == 555, "local address must be changed");
+
     YLATEST_ASSERT_TRUE(yla_symbol_done(&symbol) == YLA_OK, "normal done");
 YLATEST_CASE_END
 
