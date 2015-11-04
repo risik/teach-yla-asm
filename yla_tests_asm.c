@@ -16,7 +16,7 @@
 #include "yla_test.h"
 
 YLATEST_SUITE_BEGIN(yla_asm_suite)
-//  YLATEST_ADD_TEST(yla_test_test)
+  YLATEST_ADD_TEST(yla_test_test)
   YLATEST_ADD_TEST(yla_symbol_table_test)
 YLATEST_SUITE_END
 
