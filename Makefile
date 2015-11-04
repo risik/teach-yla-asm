@@ -25,7 +25,7 @@ ASMEXE=ylaasm
 TESTEXE=tests
 
 OBJ=\
-yla_obj_saver.o
+yla_vm_code.o
 
 MAINOBJ=yla_asm_main.o
 
