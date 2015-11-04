@@ -55,7 +55,7 @@ size_t yla_symbol_find(symbol_table_impl *o, char* name);
 int yla_symbol_init(symbol_table *table, size_t size)
 {
     CHECK_THIS_TABLE(table);
-    symbol_table_impl* o = malloc(sizeof(symbol_table));
+    symbol_table_impl* o = malloc(sizeof(symbol_table_impl));
 
     o->last_error = YLA_SYMBOLIC_ERROR_OK;
     o->size = size;
@@ -63,12 +63,14 @@ int yla_symbol_init(symbol_table *table, size_t size)
     o->count = 0;
 
     table->impl = o;
+
+    return YLA_OK;
 }
 
 int yla_symbol_done(symbol_table *table)
 {
     CHECK_THIS_TABLE(table);
-    symbol_table_impl *o = (symbol_table_impl *)&table->impl;
+    symbol_table_impl *o = (symbol_table_impl *)table->impl;
 
     free(o->table);
     free(table->impl);
@@ -77,7 +79,7 @@ int yla_symbol_done(symbol_table *table)
 int yla_symbol_last_error(symbol_table *table)
 {
     CHECK_THIS_TABLE(table);
-    symbol_table_impl *o = (symbol_table_impl *)&table->impl;
+    symbol_table_impl *o = (symbol_table_impl *)table->impl;
 
     return o->last_error;
 }
@@ -85,7 +87,7 @@ int yla_symbol_last_error(symbol_table *table)
 int yla_symbol_add_name(symbol_table *table, char* name)
 {
     CHECK_THIS_TABLE(table);
-    symbol_table_impl *o = (symbol_table_impl *)&table->impl;
+    symbol_table_impl *o = (symbol_table_impl *)table->impl;
     
     // find and fail if found
     if (yla_symbol_find(o, name) != -1) {
@@ -116,7 +118,7 @@ int yla_symbol_add_name(symbol_table *table, char* name)
 int yla_symbol_has_name(symbol_table *table, char* name, int *result)
 {
     CHECK_THIS_TABLE(table);
-    symbol_table_impl *o = (symbol_table_impl *)&table->impl;
+    symbol_table_impl *o = (symbol_table_impl *)table->impl;
     
     // find and fail if found
     if (yla_symbol_find(o, name) != -1) {
@@ -131,7 +133,7 @@ int yla_symbol_has_name(symbol_table *table, char* name, int *result)
 int yla_symbol_set_address(symbol_table *table, char* name, yla_int_type address)
 {
     CHECK_THIS_TABLE(table);
-    symbol_table_impl *o = (symbol_table_impl *)&table->impl;
+    symbol_table_impl *o = (symbol_table_impl *)table->impl;
 
     size_t index = yla_symbol_find(o, name);
     if (index == -1) {
@@ -148,7 +150,7 @@ int yla_symbol_set_address(symbol_table *table, char* name, yla_int_type address
 int yla_symbol_get_address(symbol_table *table, char* name, yla_int_type *address)
 {
     CHECK_THIS_TABLE(table);
-    symbol_table_impl *o = (symbol_table_impl *)&table->impl;
+    symbol_table_impl *o = (symbol_table_impl *)table->impl;
 
     size_t index = yla_symbol_find(o, name);
     if (index == -1) {
@@ -164,7 +166,7 @@ int yla_symbol_get_address(symbol_table *table, char* name, yla_int_type *addres
 int yla_symbol_count(symbol_table *table, size_t *count)
 {
     CHECK_THIS_TABLE(table);
-    symbol_table_impl *o = (symbol_table_impl *)&table->impl;
+    symbol_table_impl *o = (symbol_table_impl *)table->impl;
 
     *count = o->count;
 }
@@ -172,7 +174,7 @@ int yla_symbol_count(symbol_table *table, size_t *count)
 int yla_symbol_get(symbol_table *table, size_t index, char **name, yla_int_type *address)
 {
     CHECK_THIS_TABLE(table);
-    symbol_table_impl *o = (symbol_table_impl *)&table->impl;
+    symbol_table_impl *o = (symbol_table_impl *)table->impl;
 
     if (index >= o->count) {
         o->last_error = YLA_SYMBOLIC_ERROR_INDEX_TOO_LARGE;
