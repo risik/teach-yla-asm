@@ -25,11 +25,15 @@ ASMEXE=ylaasm
 TESTEXE=tests
 
 OBJ=\
-yla_vm_code.o
+yla_vm_code.o\
+yla_symbol_table.o
 
 MAINOBJ=yla_asm_main.o
 
-TESTOBJ=
+TESTOBJ=\
+yla_tests_asm.o\
+yla_test_test.o\
+yla_symbol_table_test.o
 
 .SUFFIXES: .o .c .l
 .PHONY: clean test
