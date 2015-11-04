@@ -1,5 +1,6 @@
 /*
-    Tests runner
+    Symbolic names table tests
+
     This file is part of YLA VM (Yet another Language for Academic purpose: Virtual Machine).
     YLA VM is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -14,14 +15,14 @@
 */
 
 #include "yla_test.h"
+#include "yla_symbol_table.h"
 
-YLATEST_SUITE_BEGIN(yla_asm_suite)
-//  YLATEST_ADD_TEST(yla_test_test)
-  YLATEST_ADD_TEST(yla_symbol_table_test)
-YLATEST_SUITE_END
+YLATEST_CASE_BEGIN(test_init_done)
+    symbol_table symbol;
+    YLATEST_ASSERT_TRUE(yla_symbol_init(&symbol, 10) == YLA_OK, "normal init");
+    YLATEST_ASSERT_TRUE(yla_symbol_done(&symbol) == YLA_OK, "normal done");
+YLATEST_CASE_END
 
-
-int main()
-{
-	return yla_asm_suite();
-}
+YLATEST_BEGIN(yla_symbol_table_test)
+  YLATEST_ADD_TEST_CASE(test_init_done)
+YLATEST_END
