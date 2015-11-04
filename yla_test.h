@@ -35,11 +35,21 @@
   }\
 }
 
+#define YLA_TEST_OK (0)
+#define YLA_TEST_FAIL (1)
+
+#define YLATEST_CASE_BEGIN(name) static int name()\
+{
+
+#define YLATEST_CASE_END \
+return YLA_TEST_OK;\
+}
+
 #define YLATEST_RESULT(result) ((result)?"FAILED":"PASSED")
 
 #define YLATEST_BEGIN(name) int name()\
 {\
-  int __yla_test_result = 0;\
+  int __yla_test_result = YLA_TEST_OK;\
   char *__yla_test_name = #name ;\
   printf("Start TEST %s\n", __yla_test_name);
 
@@ -62,7 +72,7 @@
 #define YLATEST_SUITE_BEGIN(name) \
 int name()\
 {\
-  int __yla_test_suite_result = 0;\
+  int __yla_test_suite_result = YLA_TEST_OK;\
   char *__yla_test_suite_name = #name ;\
   printf("Start TESTSUITE %s\n", __yla_test_suite_name);
 
