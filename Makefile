@@ -38,7 +38,7 @@ $(ASMEXE): $(OBJ) $(MAINOBJ)
 	$(LN) -o $@ $(OBJ) $(MAINOBJ)
 
 clean:
-	$(RM) $(TESTOBJ) $(OBJ) $(MAINOBJ) $(TESTEXE) $(VMEXE)
+	$(RM) $(TESTOBJ) $(OBJ) $(MAINOBJ) $(TESTEXE) $(ASMEXE)
 
 test: $(TESTEXE)
 	./$(TESTEXE)
