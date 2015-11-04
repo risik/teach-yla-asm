@@ -42,6 +42,7 @@ typedef struct {
 #define YLA_SYMBOLIC_ERROR_NAME_FOUND (3)
 #define YLA_SYMBOLIC_ERROR_NAME_TOO_LONG (4)
 #define YLA_SYMBOLIC_ERROR_INDEX_TOO_LARGE (5)
+#define YLA_SYMBOLIC_ERROR_ADDRESS_UNKNOWN (6)
 
 /**
  * Initilize symbol table.

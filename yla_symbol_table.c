@@ -34,6 +34,7 @@
 typedef struct {
     char name[YLA_SYMBOLIC_MAX_LENGHT];
     yla_int_type address;
+    int address_set;
 } symbol_record;
 
 /**
@@ -79,6 +80,8 @@ int yla_symbol_done(symbol_table *table)
 
     free(o->table);
     free(table->impl);
+    
+    return YLA_OK;
 }
 
 int yla_symbol_last_error(symbol_table *table)
@@ -119,7 +122,8 @@ int yla_symbol_add_name(symbol_table *table, char* name)
     symbol_record *record = &o->table[o->count++];
 
     strncpy(record->name, name, YLA_SYMBOLIC_MAX_LENGHT);
-    record->address = -1;
+    record->address = 0;
+    record->address_set = 0;
 
     return YLA_OK;
 }
@@ -151,6 +155,7 @@ int yla_symbol_set_address(symbol_table *table, char* name, yla_int_type address
 
     symbol_record *record = &o->table[index];
     record->address = address;
+    record->address_set = 1;
 
     return YLA_OK;
 }
@@ -166,7 +171,14 @@ int yla_symbol_get_address(symbol_table *table, char* name, yla_int_type *addres
         return YLA_ERROR;
     }
 
-    *address = o->table[index].address;
+    symbol_record *record = &o->table[index];
+
+    if (!record->address_set) {
+        o->last_error = YLA_SYMBOLIC_ERROR_ADDRESS_UNKNOWN;
+        return YLA_ERROR;
+    }
+
+    *address = record->address;
 
     return YLA_OK;
 }

@@ -46,12 +46,13 @@ YLATEST_CASE_BEGIN(test_add_simple)
     YLATEST_ASSERT_TRUE(has_name2 == 0, "not added name not found");
 
     yla_int_type address1 = 666;
-    YLATEST_ASSERT_FALSE(yla_symbol_get_address(&symbol, "aaa", &address1) == YLA_OK, "get address before set");
-    YLATEST_ASSERT_TRUE(address1 == 666, "local address must be not not changed");
+    YLATEST_ASSERT_TRUE(yla_symbol_get_address(&symbol, "aaa", &address1) == YLA_ERROR, "get address before set");
+    YLATEST_ASSERT_TRUE(YLA_SYMBOLIC_ERROR_ADDRESS_UNKNOWN == yla_symbol_last_error(&symbol), "last error after get unknown address");
+    YLATEST_ASSERT_TRUE(address1 == 666, "address == -1 before set");
 
-    yla_int_type address2 = 666;
+    yla_int_type address2 = 777;
     YLATEST_ASSERT_TRUE(yla_symbol_set_address(&symbol, "aaa", 555) == YLA_OK, "normal set");
-    YLATEST_ASSERT_FALSE(yla_symbol_get_address(&symbol, "aaa", &address2) == YLA_OK, "get address before set");
+    YLATEST_ASSERT_TRUE(yla_symbol_get_address(&symbol, "aaa", &address2) == YLA_OK, "get address before set");
     YLATEST_ASSERT_TRUE(address2 == 555, "local address must be changed");
 
     YLATEST_ASSERT_TRUE(yla_symbol_done(&symbol) == YLA_OK, "normal done");
