@@ -53,13 +53,39 @@
 #define YLA_OBJ_MAGIC3 0x626a
 
 /*
-Header structure:
-  magic1,magic2,magic3,
-  version,header_size,
-  symbol_table_size,code_size,var_table_size
-each field is yla_int
+Object file structure:
+- header
+- symbol_table
+- refs_table
+- code
+
+header structure:
+- magic1:yla_int
+- magic2:yla_int
+- magic3:yla_int
+- version:yla_int
+- header_size:yla_int
+- symbol_table_size:yla_int
+- code_size:yla_int
+- var_table_size:yla_int
+
+symbol_table:
+- symbol_record*
+
+symbol_record:
+- name:char[YLA_OBJ_NAME_MAX_LENGHT] // ASCIIZ
+- address:yla_int // in the object file's code
+
+refs_table:
+- ref_record*
+
+ref_record:
+- address:yla_int // in the object file
+- 
 */
 
-#define YLA_OBJ_HEADER_SIZE ((MAGIC_SIZE + 5) * sizeof(yla_int_type))
+#define YLA_OBJ_HEADER_SIZE ((YLA_OBJ_MAGIC_SIZE + 5) * sizeof(yla_int_type))
+
+#define YLA_OBJ_CURRENT_VERSION 1
 
 #endif
