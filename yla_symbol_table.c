@@ -68,6 +68,9 @@ int yla_symbol_init(symbol_table *table, size_t size)
 int yla_symbol_done(symbol_table *table)
 {
     CHECK_THIS_TABLE(table);
+    symbol_table_impl *o = (symbol_table_impl *)&table->impl;
+
+    free(o->table);
     free(table->impl);
 }
 
@@ -106,6 +109,38 @@ int yla_symbol_add_name(symbol_table *table, char* name)
 
     strncpy(record->name, name, YLA_SYMBOLIC_MAX_LENGHT);
     record->address = -1;
+
+    return YLA_OK;
+}
+
+int yla_symbol_has_name(symbol_table *table, char* name, int *result)
+{
+    CHECK_THIS_TABLE(table);
+    symbol_table_impl *o = (symbol_table_impl *)&table->impl;
+    
+    // find and fail if found
+    if (yla_symbol_find(o, name) != -1) {
+        *result = 0;
+        return YLA_OK;
+    }
+    
+    *result = 1;
+    return YLA_OK;
+}
+
+int yla_symbol_set_address(symbol_table *table, char* name, yla_int_type address)
+{
+    CHECK_THIS_TABLE(table);
+    symbol_table_impl *o = (symbol_table_impl *)&table->impl;
+
+    size_t index = yla_symbol_find(o, name);
+    if (index == -1) {
+        o->last_error = YLA_SYMBOLIC_ERROR_NAME_NOT_FOUND;
+        return YLA_ERROR;
+    }
+
+    symbol_record *record = &o->table[index];
+    record->address = address;
 
     return YLA_OK;
 }
