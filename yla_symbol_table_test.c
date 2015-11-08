@@ -69,6 +69,15 @@ YLATEST_CASE_BEGIN(test_add_simple)
     YLATEST_ASSERT_TRUE(yla_symbol_count(&symbol, &size4) == YLA_OK, "normal get count");
     YLATEST_ASSERT_TRUE(size4 == 1, "must be 1 always");
 
+    char* name_found = NULL;
+    yla_int_type address3 = 777;
+    YLATEST_ASSERT_TRUE(yla_symbol_get(&symbol, 0, &name_found, &address3) == YLA_OK, "normal get");
+    YLATEST_ASSERT_TRUE(strcmp(name_found, "aaa") == 0, "symbolic name");
+    YLATEST_ASSERT_TRUE(address3 == 555, "normal get");
+
+    YLATEST_ASSERT_TRUE(yla_symbol_get(&symbol, 1, &name_found, &address3) == YLA_ERROR, "normal get");
+    YLATEST_ASSERT_TRUE(yla_symbol_last_error(&symbol) == YLA_SYMBOLIC_ERROR_INDEX_TOO_LARGE, "must be error for icnorrect index");
+
     YLATEST_ASSERT_TRUE(yla_symbol_done(&symbol) == YLA_OK, "normal done");
 YLATEST_CASE_END
 
