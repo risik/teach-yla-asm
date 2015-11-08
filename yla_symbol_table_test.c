@@ -31,11 +31,21 @@ YLATEST_CASE_END
 YLATEST_CASE_BEGIN(test_add_simple)
     symbol_table symbol;
     YLATEST_ASSERT_TRUE(yla_symbol_init(&symbol, 1) == YLA_OK, "normal init");
+    size_t size1 = 777;
+    YLATEST_ASSERT_TRUE(yla_symbol_count(&symbol, &size1) == YLA_OK, "normal get count");
+    YLATEST_ASSERT_TRUE(size1 == 0, "just after init count must be 0");
 
     YLATEST_ASSERT_TRUE(yla_symbol_add_name(&symbol, "aaa") == YLA_OK, "normal add");
+    size_t size2 = 777;
+    YLATEST_ASSERT_TRUE(yla_symbol_count(&symbol, &size2) == YLA_OK, "normal get count");
+    YLATEST_ASSERT_TRUE(size2 == 1, "after add one count must be 1");
+
     YLATEST_ASSERT_FALSE(yla_symbol_add_name(&symbol, "bbb") == YLA_OK, "add exceed");
     YLATEST_ASSERT_TRUE(YLA_SYMBOLIC_ERROR_TABLE_FULL == yla_symbol_last_error(&symbol), "check last error");
     YLATEST_ASSERT_TRUE(YLA_SYMBOLIC_ERROR_OK == yla_symbol_last_error(&symbol), "recheck last error");
+    size_t size3 = 777;
+    YLATEST_ASSERT_TRUE(yla_symbol_count(&symbol, &size3) == YLA_OK, "normal get count");
+    YLATEST_ASSERT_TRUE(size3 == 1, "after incorect added second count must be 1");
 
     int has_name1 = -1;
     YLATEST_ASSERT_TRUE(yla_symbol_has_name(&symbol, "aaa", &has_name1) == YLA_OK, "has_name must always OK");
@@ -54,6 +64,10 @@ YLATEST_CASE_BEGIN(test_add_simple)
     YLATEST_ASSERT_TRUE(yla_symbol_set_address(&symbol, "aaa", 555) == YLA_OK, "normal set");
     YLATEST_ASSERT_TRUE(yla_symbol_get_address(&symbol, "aaa", &address2) == YLA_OK, "get address before set");
     YLATEST_ASSERT_TRUE(address2 == 555, "local address must be changed");
+
+    size_t size4 = 777;
+    YLATEST_ASSERT_TRUE(yla_symbol_count(&symbol, &size4) == YLA_OK, "normal get count");
+    YLATEST_ASSERT_TRUE(size4 == 1, "must be 1 always");
 
     YLATEST_ASSERT_TRUE(yla_symbol_done(&symbol) == YLA_OK, "normal done");
 YLATEST_CASE_END

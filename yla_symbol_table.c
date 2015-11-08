@@ -189,6 +189,8 @@ int yla_symbol_count(symbol_table *table, size_t *count)
     symbol_table_impl *o = (symbol_table_impl *)table->impl;
 
     *count = o->count;
+    
+    return YLA_OK;
 }
 
 int yla_symbol_get(symbol_table *table, size_t index, char **name, yla_int_type *address)
