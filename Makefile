@@ -26,7 +26,8 @@ TESTEXE=tests
 
 OBJ=\
 yla_vm_code.o\
-yla_symbol_table.o
+yla_symbol_table.o\
+yla_codegen.o
 
 MAINOBJ=yla_asm_main.o
 
