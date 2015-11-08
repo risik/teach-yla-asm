@@ -81,8 +81,24 @@ YLATEST_CASE_BEGIN(test_add_simple)
     YLATEST_ASSERT_TRUE(yla_symbol_done(&symbol) == YLA_OK, "normal done");
 YLATEST_CASE_END
 
+YLATEST_CASE_BEGIN(test_add_duplicate)
+    symbol_table symbol;
+    YLATEST_ASSERT_TRUE(yla_symbol_init(&symbol, 5) == YLA_OK, "normal init");
+
+    YLATEST_ASSERT_TRUE(yla_symbol_add_name(&symbol, "aaa1") == YLA_OK, "normal add");
+    YLATEST_ASSERT_TRUE(yla_symbol_add_name(&symbol, "aaa1") == YLA_ERROR, "duplicate add");
+    YLATEST_ASSERT_TRUE(yla_symbol_last_error(&symbol) == YLA_SYMBOLIC_ERROR_NAME_FOUND, "duplicate names not possible");
+
+    size_t size = 777;
+    YLATEST_ASSERT_TRUE(yla_symbol_count(&symbol, &size) == YLA_OK, "normal get count");
+    YLATEST_ASSERT_TRUE(size == 1, "must be 1 always");
+
+    YLATEST_ASSERT_TRUE(yla_symbol_done(&symbol) == YLA_OK, "normal done");
+YLATEST_CASE_END
+
 YLATEST_BEGIN(yla_symbol_table_test)
   YLATEST_ADD_TEST_CASE(test_init_done)
   YLATEST_ADD_TEST_CASE(test_init0)
   YLATEST_ADD_TEST_CASE(test_add_simple)
+  YLATEST_ADD_TEST_CASE(test_add_duplicate)
 YLATEST_END
